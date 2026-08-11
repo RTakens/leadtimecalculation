@@ -1,0 +1,1336 @@
+<!doctype html>
+<html lang="en" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Product Leadtime Route Map Fragment</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: transparent !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --main-surface-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: light-dark(rgb(26 28 31), rgb(255 255 255));
+  --card: color-mix(in oklab, var(--foreground) 5%, transparent);
+  --card-foreground: var(--foreground);
+  --popover: light-dark(rgb(255 255 255), rgb(45 45 45));
+  --popover-foreground: var(--foreground);
+  --primary: light-dark(rgb(51 156 255), rgb(131 195 255));
+  --primary-foreground: light-dark(rgb(255 255 255), rgb(13 13 13));
+  --secondary: light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%));
+  --secondary-foreground: var(--foreground);
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: light-dark(
+    rgb(26 28 31 / 49.4%),
+    rgb(255 255 255 / 49.8%)
+  );
+  --accent: light-dark(rgb(229 242 255), rgb(13 39 63));
+  --accent-foreground: var(--primary);
+  --destructive: light-dark(rgb(226 85 7), rgb(255 133 73));
+  --border: light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%));
+  --input: light-dark(
+    rgb(26 28 31 / 11.8%),
+    color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+  );
+  --ring: light-dark(rgb(51 156 255), rgb(131 195 255 / 76%));
+  --font-size-base: 14px;
+  --red: light-dark(rgb(186 38 35), rgb(250 66 62));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: 10px;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+  --color-background-primary: var(--background);
+  --color-text-primary: var(--foreground);
+  --color-border-secondary: var(--border);
+}
+
+:root[data-visualize-standalone] {
+  background-color: var(--background) !important;
+}
+
+/* Generic mobile code-block hosts provide light/dark mode but no series palette.
+   AppBlock hosts set all six variables themselves. */
+:root:not([data-app-block-surface]) {
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(#f3883b, #f59a56);
+  --viz-series-3: light-dark(#5dc977, #74d58b);
+  --viz-series-4: light-dark(#eb77b1, #f08fc0);
+  --viz-series-5: light-dark(#9b79ec, #aa91ef);
+  --viz-series-6: light-dark(#3ab9b1, #5acbc2);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+:root:not([data-app-block-surface]) > body {
+  padding: 12px;
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget > :not(.card) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The bundled tooltip runtime owns [data-tooltip]. AppBlock's CSS-only
+   pseudo-tooltip can widen dense grids even while hidden. */
+main [data-tooltip]::after {
+  content: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--interactive-label-primary-default, var(--primary-foreground));
+  background: var(--interactive-bg-primary-default, var(--foreground));
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(
+    in srgb,
+    var(--interactive-label-primary-default, var(--primary-foreground)) 50%,
+    transparent
+  );
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type="file"]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+    [aria-pressed="true"],
+    [aria-selected="true"],
+    .is-selected
+  ) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+</style>
+</head>
+<body>
+<div id="leadtime-route-map">
+  <style>
+    #leadtime-route-map { color: var(--foreground); width: 100%; }
+    #leadtime-route-map * { box-sizing: border-box; }
+    #leadtime-route-map .top-controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+    #leadtime-route-map label { display: block; font-weight: 500; margin-bottom: 5px; }
+    #leadtime-route-map input, #leadtime-route-map select { width: 100%; }
+    #leadtime-route-map .map { position: relative; min-height: 465px; border-block: 1px solid var(--border); overflow: hidden; background: color-mix(in srgb, var(--muted) 35%, transparent); }
+    #leadtime-route-map .routes { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+    #leadtime-route-map .road { fill: none; stroke: var(--border); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+    #leadtime-route-map .road.active { stroke-width: 7; opacity: 1; }
+    #leadtime-route-map .road.supplier-road.active { stroke: var(--viz-series-1); }
+    #leadtime-route-map .road.dc-road.active { stroke: var(--viz-series-2); }
+    #leadtime-route-map .road.edc-road.active { stroke: var(--viz-series-3); }
+    #leadtime-route-map .road.partner-road.active { stroke: var(--viz-series-4); }
+    #leadtime-route-map .truck { position: absolute; color: var(--viz-series-1); z-index: 2; display: none; }
+    #leadtime-route-map .truck.active { display: block; }
+    #leadtime-route-map .place { position: absolute; width: 150px; z-index: 3; color: var(--foreground); }
+    #leadtime-route-map .place-inner { background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 10px; }
+    #leadtime-route-map .supplier .place-inner { background: color-mix(in srgb, var(--viz-series-1) 12%, var(--card)); border-color: var(--viz-series-1); }
+    #leadtime-route-map .dc .place-inner { background: color-mix(in srgb, var(--viz-series-2) 12%, var(--card)); border-color: var(--viz-series-2); }
+    #leadtime-route-map .edc .place-inner { background: color-mix(in srgb, var(--viz-series-3) 12%, var(--card)); border-color: var(--viz-series-3); }
+    #leadtime-route-map .partner .place-inner { background: color-mix(in srgb, var(--viz-series-4) 12%, var(--card)); border-color: var(--viz-series-4); }
+    #leadtime-route-map .customer .place-inner { background: color-mix(in srgb, var(--viz-series-5) 12%, var(--card)); border-color: var(--viz-series-5); }
+    #leadtime-route-map .place.active .place-inner { box-shadow: 0 0 0 3px color-mix(in srgb, var(--foreground) 18%, transparent); }
+    #leadtime-route-map .place-head { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; font-weight: 500; }
+    #leadtime-route-map .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    #leadtime-route-map .pair span { display: block; color: var(--muted-foreground); margin-bottom: 3px; }
+    #leadtime-route-map .pair input { min-width: 0; }
+    #leadtime-route-map .supplier { left: 2%; top: 28px; }
+    #leadtime-route-map .dc { left: 2%; top: 328px; }
+    #leadtime-route-map .edc { left: 34%; top: 328px; }
+    #leadtime-route-map .partner { left: 55%; top: 188px; }
+    #leadtime-route-map .customer { right: 1%; top: 188px; }
+    #leadtime-route-map .route-summary { display: grid; grid-template-columns: 130px 1fr 90px; gap: 10px; align-items: center; margin-top: 16px; }
+    #leadtime-route-map .route-summary + .route-summary { margin-top: 10px; }
+    #leadtime-route-map .bars { display: grid; gap: 5px; }
+    #leadtime-route-map .track { height: 18px; background: var(--muted); border-radius: 5px; overflow: hidden; }
+    #leadtime-route-map .bar { height: 100%; min-width: 2px; background: var(--viz-series-1); border-radius: 5px; transition: width 180ms ease; }
+    #leadtime-route-map .bar.current { opacity: .4; }
+    #leadtime-route-map .dates { margin-top: 14px; }
+    #leadtime-route-map .impact { font-weight: 500; white-space: nowrap; }
+    #leadtime-route-map .legend { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted-foreground); margin: 10px 0 0 140px; }
+    #leadtime-route-map .scenario-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0 0 140px; }
+    #leadtime-route-map .scenario-line span { color: var(--muted-foreground); }
+    #leadtime-route-map .scenario-line strong { padding: 5px 9px; border-radius: 999px; background: color-mix(in srgb, var(--viz-series-5) 14%, var(--card)); }
+    #leadtime-route-map .swatch { width: 14px; height: 8px; background: var(--viz-series-1); border-radius: 2px; display: inline-block; margin-right: 5px; }
+    #leadtime-route-map .swatch.current { opacity: .4; }
+    #leadtime-route-map .unavailable { color: var(--muted-foreground); }
+    @media (max-width: 700px) {
+      #leadtime-route-map .top-controls { grid-template-columns: 1fr 1fr; }
+      #leadtime-route-map .map { min-height: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-block: 12px; background: transparent; }
+      #leadtime-route-map .place { position: static; width: auto; }
+      #leadtime-route-map .routes, #leadtime-route-map .truck { display: none !important; }
+      #leadtime-route-map .route-summary { grid-template-columns: 96px 1fr 70px; }
+      #leadtime-route-map .legend { margin-left: 106px; }
+      #leadtime-route-map .scenario-line { margin-left: 106px; }
+    }
+  </style>
+
+  <div class="top-controls">
+    <div>
+      <label for="lrm-product">Highlighted route</label>
+      <select id="lrm-product" class="form-select">
+        <option value="dropship">Dropshipment</option>
+        <option value="trrz">TR_RZ</option>
+        <option value="dc">DC article</option>
+      </select>
+    </div>
+    <div>
+      <label for="lrm-stock">Stock scenario</label>
+      <select id="lrm-stock" class="form-select">
+        <option value="edc">In stock at eDC</option>
+        <option value="source">Not at eDC; source has stock</option>
+        <option value="none">No stock at eDC or source</option>
+      </select>
+    </div>
+    <div>
+      <label for="lrm-date">Order date</label>
+      <input id="lrm-date" class="form-control" type="date" value="2026-08-11">
+    </div>
+    <div>
+      <label for="lrm-time">Order time</label>
+      <input id="lrm-time" class="form-control" type="time" value="14:00">
+    </div>
+  </div>
+
+  <div class="map" role="img" aria-label="Schematic lead-time route map from suppliers and warehouses to the customer">
+    <svg class="routes" viewBox="0 0 1000 465" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <marker id="lrm-arrow-supplier" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--viz-series-1)"></path></marker>
+        <marker id="lrm-arrow-dc" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--viz-series-2)"></path></marker>
+        <marker id="lrm-arrow-edc" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--viz-series-3)"></path></marker>
+        <marker id="lrm-arrow-partner" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--viz-series-4)"></path></marker>
+      </defs>
+      <path class="road supplier-road" data-road="supplier-home" d="M170 88 C350 150, 650 120, 785 145 L829 215" marker-end="url(#lrm-arrow-supplier)"></path>
+      <path class="road supplier-road" data-road="supplier-partner" d="M170 98 C300 165, 425 185, 543 225" marker-end="url(#lrm-arrow-supplier)"></path>
+      <path class="road dc-road" data-road="dc-partner" d="M170 383 C320 385, 440 340, 543 286" marker-end="url(#lrm-arrow-dc)"></path>
+      <path class="road edc-road" data-road="edc-partner" d="M490 383 C520 355, 532 325, 543 290" marker-end="url(#lrm-arrow-edc)"></path>
+      <path class="road partner-road" data-road="partner-home" d="M715 245 L829 245" marker-end="url(#lrm-arrow-partner)"></path>
+    </svg>
+    <i class="truck" data-truck="supplier-home" data-lucide="truck" aria-hidden="true" style="left:51%;top:124px;color:var(--viz-series-1)"></i>
+    <i class="truck" data-truck="supplier-partner" data-lucide="truck" aria-hidden="true" style="left:42%;top:157px;color:var(--viz-series-1)"></i>
+    <i class="truck" data-truck="dc-partner" data-lucide="truck" aria-hidden="true" style="left:43%;top:337px;color:var(--viz-series-2)"></i>
+    <i class="truck" data-truck="edc-partner" data-lucide="truck" aria-hidden="true" style="left:54%;top:331px;color:var(--viz-series-3)"></i>
+    <i class="truck" data-truck="partner-home" data-lucide="truck" aria-hidden="true" style="left:79%;top:224px;color:var(--viz-series-4)"></i>
+
+    <div class="place supplier" data-place="supplier">
+      <div class="place-inner">
+        <div class="place-head"><i data-lucide="factory" aria-hidden="true"></i>Supplier</div>
+        <div class="pair"><label><span>Current</span><input class="form-control value" data-key="supplier" data-version="current" type="number" min="0" value="3"></label><label><span>Proposed</span><input class="form-control value" data-key="supplier" data-version="proposed" type="number" min="0" value="3"></label></div>
+      </div>
+    </div>
+    <div class="place dc" data-place="dc">
+      <div class="place-inner">
+        <div class="place-head"><i data-lucide="warehouse" aria-hidden="true"></i>DC</div>
+        <div class="pair"><label><span>Current</span><input class="form-control value" data-key="dc" data-version="current" type="number" min="0" value="2"></label><label><span>Proposed</span><input class="form-control value" data-key="dc" data-version="proposed" type="number" min="0" value="2"></label></div>
+      </div>
+    </div>
+    <div class="place edc" data-place="edc">
+      <div class="place-inner">
+        <div class="place-head"><i data-lucide="warehouse" aria-hidden="true"></i>eDC</div>
+        <div class="pair"><label><span>Current</span><input class="form-control value" data-key="edc" data-version="current" type="number" min="0" value="1"></label><label><span>Proposed</span><input class="form-control value" data-key="edc" data-version="proposed" type="number" min="0" value="1"></label></div>
+      </div>
+    </div>
+    <div class="place partner" data-place="partner">
+      <div class="place-inner">
+        <div class="place-head"><i data-lucide="package-check" aria-hidden="true"></i>Consignment</div>
+        <div class="pair"><label><span>Current</span><input class="form-control value" data-key="partner" data-version="current" type="number" min="0" value="1"></label><label><span>Proposed</span><input class="form-control value" data-key="partner" data-version="proposed" type="number" min="0" value="1"></label></div>
+      </div>
+    </div>
+    <div class="place customer" data-place="home">
+      <div class="place-inner">
+        <div class="place-head"><i data-lucide="house" aria-hidden="true"></i>Customer</div>
+        <div class="text-small text-muted">Expected delivery</div>
+        <div id="lrm-selected-date">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="top-controls" style="margin-top:14px">
+    <div>
+      <label for="lrm-cutoff-current">Current cut-off hour</label>
+      <input id="lrm-cutoff-current" class="form-control" type="number" min="0" max="23" value="15">
+    </div>
+    <div>
+      <label for="lrm-cutoff-proposed">Proposed cut-off hour</label>
+      <input id="lrm-cutoff-proposed" class="form-control" type="number" min="0" max="23" value="15">
+    </div>
+  </div>
+
+  <div class="scenario-line"><span>Used stock scenario:</span><strong id="lrm-scenario-label">In stock at eDC</strong></div>
+  <div class="legend"><span><i class="swatch current"></i>Current</span><span><i class="swatch"></i>Proposed</span></div>
+  <div id="lrm-bars" aria-live="polite"></div>
+  <div id="lrm-dates" class="dates table-responsive" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const root = document.getElementById("leadtime-route-map");
+      const product = root.querySelector("#lrm-product");
+      const stock = root.querySelector("#lrm-stock");
+      const dateInput = root.querySelector("#lrm-date");
+      const timeInput = root.querySelector("#lrm-time");
+      const cutoffCurrent = root.querySelector("#lrm-cutoff-current");
+      const cutoffProposed = root.querySelector("#lrm-cutoff-proposed");
+      const selectedDate = root.querySelector("#lrm-selected-date");
+      const bars = root.querySelector("#lrm-bars");
+      const dates = root.querySelector("#lrm-dates");
+      const scenarioLabel = root.querySelector("#lrm-scenario-label");
+      const productTypes = [
+        { key: "dropship", label: "Dropshipment" },
+        { key: "trrz", label: "TR_RZ" },
+        { key: "dc", label: "DC article" }
+      ];
+
+      function values(version) {
+        const result = {};
+        root.querySelectorAll(`.value[data-version="${version}"]`).forEach(input => { result[input.dataset.key] = Math.max(0, Number(input.value) || 0); });
+        result.cutoff = Math.max(0, Math.min(23, Number(version === "current" ? cutoffCurrent.value : cutoffProposed.value) || 0));
+        return result;
+      }
+
+      function routeFor(type) {
+        if (type === "dropship") return { roads: ["supplier-home"], places: ["supplier", "home"], formula: "Supplier", supplierMode: "dropship" };
+        if (type === "trrz") {
+          if (stock.value === "edc") return { roads: ["edc-partner", "partner-home"], places: ["edc", "partner", "home"], formula: "eDC + consignment", supplierMode: "none" };
+          if (stock.value === "source") return { roads: ["supplier-partner", "partner-home"], places: ["supplier", "partner", "home"], formula: "Supplier + consignment", supplierMode: "inbound" };
+          return { roads: [], places: [], formula: "Unavailable: no eDC or supplier stock", unavailable: true, supplierMode: "none" };
+        }
+        if (stock.value === "edc") return { roads: ["edc-partner", "partner-home"], places: ["edc", "partner", "home"], formula: "eDC + consignment", supplierMode: "none" };
+        if (stock.value === "source") return { roads: ["dc-partner", "partner-home"], places: ["dc", "partner", "home"], formula: "DC + consignment", supplierMode: "none" };
+        return { roads: [], places: [], formula: "Not orderable: no eDC or DC stock", unavailable: true, supplierMode: "none" };
+      }
+
+      function calculate(type, v) {
+        const route = routeFor(type);
+        if (route.unavailable) return { ...route };
+        let days = 0;
+        if (type === "dropship") days += v.supplier;
+        else if (type === "trrz" && stock.value === "edc") days += v.edc + v.partner;
+        else if (type === "trrz") days += v.supplier + v.partner;
+        else if (stock.value === "edc") days += v.edc + v.partner;
+        else days += v.dc + v.partner;
+
+        const start = new Date(dateInput.value + "T" + (timeInput.value || "00:00"));
+        const orderHour = Number((timeInput.value || "00:00").slice(0, 2));
+        if (orderHour >= v.cutoff) start.setDate(start.getDate() + 1);
+        const delivery = new Date(start.getTime());
+        delivery.setDate(delivery.getDate() + days);
+
+        if (route.supplierMode === "dropship") {
+          if (delivery.getDay() === 6) delivery.setDate(delivery.getDate() + 2);
+          if (delivery.getDay() === 0) delivery.setDate(delivery.getDate() + 1);
+        } else if (route.supplierMode === "inbound") {
+          while (delivery.getDay() === 0 || delivery.getDay() === 1) delivery.setDate(delivery.getDate() + 1);
+        }
+        if (type === "dc") {
+          while (delivery.getDay() === 0 || delivery.getDay() === 1) delivery.setDate(delivery.getDate() + 1);
+        }
+        const orderedDay = new Date(dateInput.value + "T00:00");
+        const deliveredDay = new Date(delivery.getFullYear(), delivery.getMonth(), delivery.getDate());
+        const elapsed = Math.round((deliveredDay.getTime() - orderedDay.getTime()) / 86400000);
+        return { ...route, days, elapsed, delivery };
+      }
+
+      function formatDate(value) {
+        return new Intl.DateTimeFormat(undefined, { weekday: "short", day: "numeric", month: "short" }).format(value);
+      }
+
+      function highlightRoute() {
+        const route = routeFor(product.value);
+        root.querySelectorAll(".road, .truck, .place").forEach(el => el.classList.remove("active"));
+        route.roads.forEach(name => {
+          const road = root.querySelector(`[data-road="${name}"]`);
+          const truck = root.querySelector(`[data-truck="${name}"]`);
+          if (road) road.classList.add("active");
+          if (truck) truck.classList.add("active");
+        });
+        route.places.forEach(name => {
+          const place = root.querySelector(`[data-place="${name}"]`);
+          if (place) place.classList.add("active");
+        });
+      }
+
+      function render() {
+        scenarioLabel.textContent = stock.options[stock.selectedIndex].textContent;
+        const currentValues = values("current");
+        const proposedValues = values("proposed");
+        const results = productTypes.map(type => ({ type, current: calculate(type.key, currentValues), proposed: calculate(type.key, proposedValues) }));
+        const max = Math.max(1, ...results.flatMap(item => [item.current.elapsed || 0, item.proposed.elapsed || 0]));
+        bars.innerHTML = results.map(item => {
+          if (item.proposed.unavailable) return `<div class="route-summary unavailable"><strong>${item.type.label}</strong><div>${item.proposed.formula}</div><span>—</span></div>`;
+          const cw = Math.max(2, item.current.elapsed / max * 100);
+          const pw = Math.max(2, item.proposed.elapsed / max * 100);
+          return `<div class="route-summary"><strong>${item.type.label}</strong><div class="bars"><div class="track"><div class="bar current" style="width:${cw}%"></div></div><div class="track"><div class="bar" style="width:${pw}%"></div></div></div><span>${item.current.elapsed} → ${item.proposed.elapsed}d</span></div>`;
+        }).join("");
+        dates.innerHTML = `<table class="table table-sm"><thead><tr><th>Product type</th><th>Route</th><th>Current delivery</th><th>Proposed delivery</th><th>Impact</th></tr></thead><tbody>${results.map(item => {
+          if (item.proposed.unavailable) return `<tr><th scope="row">${item.type.label}</th><td>${item.proposed.formula}</td><td colspan="3">Unavailable</td></tr>`;
+          const delta = Math.round((item.proposed.delivery.getTime() - item.current.delivery.getTime()) / 86400000);
+          const impact = delta === 0 ? "No change" : (delta > 0 ? "+" + delta : delta) + " days";
+          return `<tr><th scope="row">${item.type.label}</th><td>${item.proposed.formula}</td><td class="text-nowrap">${formatDate(item.current.delivery)}</td><td class="text-nowrap">${formatDate(item.proposed.delivery)}</td><td class="impact">${impact}</td></tr>`;
+        }).join("")}</tbody></table>`;
+        const selected = results.find(item => item.type.key === product.value).proposed;
+        selectedDate.textContent = selected.unavailable ? "Unavailable" : formatDate(selected.delivery);
+        highlightRoute();
+      }
+
+      root.querySelectorAll("input, select").forEach(control => control.addEventListener("input", render));
+      render();
+      if (window.lucide) window.lucide.createIcons({ attrs: { width: 18, height: 18 } });
+    })();
+  </script>
+</div>
+
+<script id="codex-visualization-floating-ui-core" src="https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js"></script>
+<script id="codex-visualization-floating-ui-dom" src="https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js"></script>
+<script id="codex-visualization-lucide" async src="https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js"></script>
+<script id="codex-visualization-tooltip">/* oxlint-disable typescript/no-unsafe-argument, typescript/no-unsafe-call, typescript/no-unsafe-return */
+// Runs inside the visualization sandbox, not the host webview.
+(() => {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set(["top", "right", "bottom", "left"]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+
+  const getTrigger = (target) =>
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest("[data-tooltip]")
+      : null;
+  const containsTarget = (trigger, target) =>
+    target?.nodeType != null && trigger.contains(target);
+  const getContent = (trigger) =>
+    trigger.getAttribute("data-tooltip")?.trim() ?? "";
+  const getPlacement = (trigger) => {
+    const placement = trigger.getAttribute("data-tooltip-placement");
+    return tooltipPlacements.has(placement) ? placement : "top";
+  };
+  const getTooltip = () => {
+    if (tooltip == null) {
+      tooltip = document.createElement("div");
+      tooltip.id = tooltipId;
+      tooltip.className = "tooltip";
+      tooltip.setAttribute("role", "tooltip");
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) => {
+    const ids = new Set(
+      (trigger.getAttribute("aria-describedby") ?? "")
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute("aria-describedby");
+    } else {
+      trigger.setAttribute("aria-describedby", [...ids].join(" "));
+    }
+  };
+  const clearOpenTimeout = () => {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) => {
+    clearOpenTimeout();
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) => {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              "--tooltip-available-width",
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              "--tooltip-available-height",
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: "fixed",
+    })
+      .then(({ x, y }) => {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = "visible";
+      })
+      .catch(() => {
+        if (activeTrigger === trigger && request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) => {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = "hidden";
+    floating.style.transform = "translate(0, 0)";
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () => {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) => {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() < skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() => {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) => {
+    if (event.pointerType === "touch") {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handleLeave = (event) => {
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) => {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(":focus-visible")) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) => {
+    if (event.key === "Escape") {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) => {
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () => {
+    closeTooltip(false);
+    document.removeEventListener("pointerover", handlePointerOpen);
+    document.removeEventListener("pointerout", handleLeave);
+    document.removeEventListener("focusin", handleFocusIn);
+    document.removeEventListener("focusout", handleLeave);
+    document.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("contextmenu", handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener("pointerover", handlePointerOpen);
+  document.addEventListener("pointerout", handleLeave);
+  document.addEventListener("focusin", handleFocusIn);
+  document.addEventListener("focusout", handleLeave);
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("contextmenu", handleContextMenu);
+  window.addEventListener("pagehide", destroy, { once: true });
+})();
+</script>
+<script id="codex-visualization-lucide-initialization">(() => {
+  const initialize = () => {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById("codex-visualization-lucide")
+    ?.addEventListener("load", initialize, { once: true });
+})();
+</script>
+</body>
+</html>
